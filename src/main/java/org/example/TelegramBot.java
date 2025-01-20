@@ -11,7 +11,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 public class TelegramBot extends TelegramLongPollingBot {
 
     private final String botName;
-    private MessageProcessor processor = new MessageProcessor();
+    private TextProcessor processor = new TextProcessor();
 
     public TelegramBot() {
         super("8052212937:AAE2yEkX1t85Zjca1sfxW3ZMvzbJBf9XZCo");
@@ -39,7 +39,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             Message message = update.getMessage();
             String userMessage = message.getText();
             String chatId = message.getChatId().toString();
-            String response = handleUserMessage(userMessage);
+            String response = handleUserMessage(userMessage, message);
 
 
             // Send response back to user
@@ -55,19 +55,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private String handleUserMessage(String userMessage) {
-        return processor.processCommand(userMessage.toLowerCase());
+    private String handleUserMessage(String userMessage, Message fullMessage) {
+        return processor.handleMessage(userMessage.toLowerCase(),fullMessage);
     }
 }
 
 
 // difficulties for games
-
-// return switch (userMessage.toLowerCase()) {
-//            case "/start" -> "Welcome to MySimpleTelegramBot! Type '/help' for commands.";
-//            case "/help" ->
-//                    "Available commands:\n/start - Start the bot\n/hello - Say hello\n/help - Show this help message";
-//            case "/hello" -> "Hello there! How can I assist you today?";
-//            case "/numguesser" -> "Okay, I chose a number between 1 and 1000. What is it? :)";
-//            default -> "Sorry, I don't understand that command. Type '/help' for a list of commands.";
-//        };

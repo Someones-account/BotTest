@@ -1,8 +1,11 @@
 package org.example;
 
+import org.telegram.telegrambots.meta.api.objects.Chat;
+import org.telegram.telegrambots.meta.api.objects.Message;
+
 import java.util.Random;
 
-public class MessageProcessor {
+public class TextProcessor {
 
     private String conversationState = "root";
     private int gameNumber;
@@ -10,37 +13,24 @@ public class MessageProcessor {
     char[] wordChars;
     Random randomizer = new Random();
 
-    public String processCommand(String message) {
-        String result = handleMessage(message);
-//        conversationState = changeState(message);
-        return result;
-    }
+    String[] easyWords = {"game", "luck", "seek", "guide", "leap", "tree", "low", "great", "queue"};
 
-    private String handleMessage(String message) {
-        if (specialCommandCheck(message)) {
+    public String handleMessage(String messageText, Message message) {
+        if (specialCommandCheck(messageText)) {
             conversationState = "root";
             return "Welcome to GuesserBot! Type '/help' for commands.";
         }
 
         return switch (conversationState) {
-            case "root" -> rootConversation(message);
-            case "numbers" -> numberGuess(message);
-            case "words" -> wordGuess(message);
+            case "root" -> rootConversation(messageText, message);
+            case "numbers" -> numberGuess(messageText);
+            case "words" -> wordGuess(messageText);
             default -> "An error occurred (impossible state)";
         };
     }
 
-    private String changeState(String userMessage) {
-        return switch (userMessage.toLowerCase()) {
-            case "/numguesser" -> "numbers";
-            case "/wordguesser" -> "words";
-            case "/exit" -> "root";
-            default -> conversationState;
-        };
-    }
-
-    private String rootConversation(String message) {
-        return switch (message) {
+    private String rootConversation(String textMessage, Message message) {
+        return switch (textMessage) {
             case "/start" -> "Welcome to GuesserBot! Type '/help' for commands.";
             case "/help" -> """
                     Available commands:
@@ -53,6 +43,7 @@ public class MessageProcessor {
             case "/hello" -> "Hello there! How can I assist you today?";
             case "/numguesser" -> initNumGame();
             case "/wordguesser" -> initWordGame();
+            case "/user" -> userInfo(message);
             default -> "Sorry, I don't understand that command. Type '/help' for a list of commands.";
         };
     }
@@ -67,7 +58,8 @@ public class MessageProcessor {
     private String initWordGame() {
         // word randomizer
         conversationState = "words";
-        gameWord = "preach";
+        gameWord = easyWords[randomizer.nextInt(easyWords.length)];
+        System.out.println(gameWord);
         wordChars = gameWord.toCharArray();
         return String.format("I have a word, it's %d letters long. Take your guess!", wordChars.length);
     }
@@ -113,6 +105,13 @@ public class MessageProcessor {
         if (wordGuessed) {conversationState = "root";}
         return (wordGuessed ? "You guessed it! The word was " + gameWord :
                 String.format("Not quite! Here is what you've guessed: %s", comparisonResult));
+    }
+
+    private String userInfo(Message message) {
+        Chat chat = message.getChat();
+        return String.format("""
+                Profile Name: %s
+                Username: %s""", chat.getFirstName(), chat.getUserName());
     }
 
     private boolean specialCommandCheck(String str) {
