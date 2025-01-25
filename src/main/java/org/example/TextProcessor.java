@@ -14,6 +14,8 @@ public class TextProcessor {
     Random randomizer = new Random();
 
     String[] easyWords = {"game", "luck", "seek", "guide", "leap", "tree", "low", "great", "queue"};
+    String[] mediumWords = {"strike", "betrayal", "meadow", "mirror", "zealot", "castle"};
+    String[] complexWords = {"intimidate", "selector", "collapse", "gambling", "technology"};
 
     public String handleMessage(String messageText, Message message) {
         if (specialCommandCheck(messageText)) {
@@ -59,9 +61,8 @@ public class TextProcessor {
         // word randomizer
         conversationState = "words";
         gameWord = easyWords[randomizer.nextInt(easyWords.length)];
-        System.out.println(gameWord);
         wordChars = gameWord.toCharArray();
-        return String.format("I have a word, it's %d letters long. Take your guess!", wordChars.length);
+        return String.format("I have a word, it's %d letters long. Take your guess! (Type /easy , /medium , or /complex to change difficulty)", wordChars.length);
     }
 
     private String numberGuess(String guess) {
@@ -86,8 +87,14 @@ public class TextProcessor {
         boolean wordGuessed = true;
         StringBuilder comparisonResult = new StringBuilder();
 
+        // Check if user changed game difficulty
+        if (difficultySet(userGuess)) {
+            wordChars = gameWord.toCharArray();
+            return String.format("A new word of chosen difficulty was set. It is %d letters long", gameWord.length());
+        }
+
         // Check what symbols coincide and if words are the same
-        if (userGuess.length() == gameWord.length()) {
+        if (userGuess.length() == gameWord.length() && userGuess.matches("[a-zA-Z]+")) {
             char[] userChars = userGuess.toCharArray();
             for (int i = 0; i < userChars.length; i++) {
                 if (userChars[i] == wordChars[i]) {
@@ -112,6 +119,18 @@ public class TextProcessor {
         return String.format("""
                 Profile Name: %s
                 Username: %s""", chat.getFirstName(), chat.getUserName());
+    }
+
+    private boolean difficultySet(String command) {
+        switch (command) {
+            case "/easy" -> gameWord = easyWords[randomizer.nextInt(easyWords.length)];
+            case "/medium" -> gameWord = mediumWords[randomizer.nextInt(mediumWords.length)];
+            case "/complex" -> gameWord = complexWords[randomizer.nextInt(complexWords.length)];
+            default -> {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean specialCommandCheck(String str) {
