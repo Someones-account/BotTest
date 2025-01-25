@@ -42,7 +42,7 @@ public class TextProcessor {
                     /wordguesser - play a word guessing game
                     /exit - leave current game
                     /help - Show this help message""";
-            case "/hello" -> "Hello there! How can I assist you today?";
+            case "/hello" -> "Hello there! How can I help you today?";
             case "/numguesser" -> initNumGame();
             case "/wordguesser" -> initWordGame();
             case "/user" -> userInfo(message);
