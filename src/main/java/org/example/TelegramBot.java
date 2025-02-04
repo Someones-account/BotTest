@@ -41,8 +41,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             String chatId = message.getChatId().toString();
             String response = handleUserMessage(userMessage, message);
 
-
-            // Send response back to user
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(chatId);
             sendMessage.setText(response);
@@ -59,6 +57,3 @@ public class TelegramBot extends TelegramLongPollingBot {
         return processor.handleMessage(userMessage.toLowerCase(),fullMessage);
     }
 }
-
-
-// difficulties for games
